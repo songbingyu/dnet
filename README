@@ -1,0 +1,101 @@
+AUTHOR: Charley Ren
+
+Project: Custom networking stack implemented in C.
+
+File Directory Structure:
+
+	.
+	├── Makefile
+	├── README
+	├── client
+	│   ├── srt_client.c
+	│   └── srt_client.h
+	├── network
+	│   ├── dvtable.c
+	│   ├── dvtable.h
+	│   ├── nbrcosttable.c
+	│   ├── nbrcosttable.h
+	│   ├── network.c
+	│   ├── network.h
+	│   ├── routingtable.c
+	│   └── routingtable.h
+	├── overlay
+	│   ├── neighbortable.c
+	│   ├── neighbortable.h
+	│   ├── overlay.c
+	│   └── overlay.h
+	├── server
+	│   ├── srt_server.c
+	│   └── srt_server.h
+	└── topology
+	    ├── topology.c
+	    ├── topology.dat
+	    └── topology.h
+
+
+Main Components:
+
+	SRT (Transport):
+
+		- Ensures data integrity and detects bit corruption through checksums. Provides connection management through two-way handshake and ordered connection states. Manages flow control, ensures sequential data transfer, and accounts for packet loss through Go-Back-N protocol.
+
+	SNP (Network):
+
+		- Analyzes network topology and applies distance vector routing algorithm to determine shortest path 'next hop' network node upon receiving packets.
+
+	Overlay:
+
+		- Connects to all the neighbor overlay processes. Receives incoming packets from these neighbor processes and forwards these packets to the local SNP (network) process. Then forwards packets received by the SNP to the appropriate 'next hop' neighbor node in the overlay network.
+
+
+** NOTE: 
+
+	You probably have noticed that several listed file dependencies inside my Makefile are missing from my directories, including: "app_simple_client.c", "app_stress_client.c", "app_simple_server.c", "app_stress_server.c", and a series of utility files within the 'common' directory. These have been removed as they are all instructor-provided files, and thus not of my own handiwork. Professor has asked fellow classmates that these files be removed from the public eye.
+
+
+Implementation/Design choices:
+
+	Assuming that topology.dat is in the correct format, as my program does not detect a bad topology.dat file. Also assuming that each edge in the topology.dat file is between two unique hosts, and that there exists no edge between a host and itself, i.e. no self-loops.
+
+	When an SNP gets killed, but its overlay is still running, the SNP can still reconnect to the overlay node. When the overlay node detects that the SNP disconnects, the overlay node goes back to listening mode for the SNP to reconnect while still getting packet traffic from its neighbors. 
+
+	** Note, that an overlay will still print that it got a packet from its neighbor, but if its SNP is not running, then it won't be able to pass the packet to the SNP.
+
+	If the overlay is killed when its SNP is active, the SNP will detect that and promptly exit as well. Again, if the overlay on the network is killed, its neighbors will detect that and promptly close their socket corresponding to the killed overlay. The assumption is that once an overlay is killed, it can no longer reconnect to the overlay network.
+
+	Upon startup, all nodes must connect properly to their neighbors or we exit if there are unestablished connections.
+
+	** On the Routing: based on the nature of our implementation of distance vector routing, we don't account for lost links resulting from disconnected SNPs within our routing table. Instead, if a host1 wants to send to host3, but host3 is disconnected, host1 will still try to send along the route to host3, but the packet will simply not be received. Host1 won't register host3 as a lost link in its routing table.
+
+
+Building and Running:
+
+	Please run everything from the top level directory, e.g. to run overlay, type './overlay/overlay', for network, './network/network', and the same applies for the simple and stress client/server.
+
+	Make sure each stack of overlay, network, and application processes is run from a different linux system. E.g. if you want your network to have 4 nodes, you need to run the stack on 4 different systems.
+
+	Use make to compile, and 'make clean' to remove executables and auxiliary output files after running. 
+
+	To run the application:
+
+		1. start the overlay processes:
+
+			At each node, run './overlay./overlay &' from top level directory
+			The overlay processes on 4 nodes should be started within 1 min.
+			wait until you see: waiting connection from network layer on all the nodes.
+
+		2. start the network processes: 
+
+			At each node, run './network./network &' from top level directory
+			wait until you see: waiting for connection from SRT process on all the nodes.
+
+		3. start the transport processes and run the application:
+			At one node: run ./server/app_simple_server or ./server/app_stress_server
+
+			At another node: run ./app_simple_app or ./app_stress_app
+
+		To stop the program:
+
+		use kill processID to kill the network processes and overlay processes
+
+		If the port numbers used by the program are used already, the program exits.

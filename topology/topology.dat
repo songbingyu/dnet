@@ -1,0 +1,5 @@
+node1 node2 2
+node3 node2 3
+node4 node1 4
+node4 node3 5
+node4 node2 7
