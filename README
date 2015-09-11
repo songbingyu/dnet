@@ -2,6 +2,10 @@ Author: Charley Ren
 
 Project: Custom networking stack implemented in C.
 
+** NOTE:
+
+        You probably have noticed that several listed file dependencies inside my Makefile are missing from my directories, including: "app_simple_client.c", "app_stress_client.c", "app_simple_server.c", "app_stress_server.c", and a series of utility files within the 'common' directory. These have been removed as they are all instructor-provided files, and thus not of my own handiwork. Professor has asked fellow classmates that these files be removed from the public eye.
+
 File Directory Structure:
 
 	.
@@ -46,11 +50,6 @@ Main Components:
 	Overlay:
 
 		- Connects to all the neighbor overlay processes. Receives incoming packets from these neighbor processes and forwards these packets to the local SNP (network) process. Then forwards packets received by the SNP to the appropriate 'next hop' neighbor node in the overlay network.
-
-
-** NOTE: 
-
-	You probably have noticed that several listed file dependencies inside my Makefile are missing from my directories, including: "app_simple_client.c", "app_stress_client.c", "app_simple_server.c", "app_stress_server.c", and a series of utility files within the 'common' directory. These have been removed as they are all instructor-provided files, and thus not of my own handiwork. Professor has asked fellow classmates that these files be removed from the public eye.
 
 
 Implementation/Design choices:
