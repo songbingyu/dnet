@@ -75,26 +75,26 @@ Building and Running:
 
 	Use make to compile, and 'make clean' to remove executables and auxiliary output files after running. 
 
-	To run the application:
+	To run the full stack:
 
-		1. start the overlay processes:
+	1. start the overlay processes:
 
-			At each node, run './overlay./overlay &' from top level directory
-			The overlay processes on 4 nodes should be started within 1 min.
-			wait until you see: waiting connection from network layer on all the nodes.
+		At each node, run './overlay./overlay &' from top level directory
+		The overlay processes on 4 nodes should be started within 1 min.
+		wait until you see: waiting connection from network layer on all the nodes.
 
-		2. start the network processes: 
+	2. start the network processes: 
 
-			At each node, run './network./network &' from top level directory
-			wait until you see: waiting for connection from SRT process on all the nodes.
+		At each node, run './network./network &' from top level directory
+		wait until you see: waiting for connection from SRT process on all the nodes.
 
-		3. start the transport processes and run the application:
-			At one node: run ./server/app_simple_server or ./server/app_stress_server
+	3. start the transport processes and run the application:
+		At one node: run ./server/app_simple_server or ./server/app_stress_server
 
-			At another node: run ./app_simple_app or ./app_stress_app
+		At another node: run ./app_simple_app or ./app_stress_app
 
-		To stop the program:
+	To stop the program:
 
-		use kill processID to kill the network processes and overlay processes
+	use kill processID to kill the network processes and overlay processes
 
-		If the port numbers used by the program are used already, the program exits.
+	If the port numbers used by the program are used already, the program exits.
